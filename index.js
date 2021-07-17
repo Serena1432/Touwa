@@ -71,10 +71,12 @@ app.get("/comic/latest", function(req, res) {
 			var comic_list = document.getElementsByClassName("page-item")[0].getElementsByTagName("li");
 			for (var i = 0; i < comic_list.length; i++) {
 				var comic = comic_list[i], background = comic.getElementsByTagName("a")[0].getElementsByTagName("div")[0].style.background;
+				var link = comic.getElementsByTagName("a")[0].href, name = link.substr(link.indexOf("/") + 1);
 				data.push({
-					url: domain + comic.getElementsByTagName("a")[0].href,
+					url: domain + link,
 					name: comic.getElementsByTagName("h2")[0].textContent,
 					image_url: background.substr(background.indexOf("https://"), background.lastIndexOf(")") - background.indexOf("https://")),
+					code: name.substr(0, name.indexOf(".html"))
 				});
 			}
 		}
