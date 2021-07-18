@@ -389,6 +389,7 @@ app.get("/author/:name", function(req, res) {
 				}
 				data.push({
 					name: comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].textContent,
+					id: parseInt(comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].href.substr(1, comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].href.indexOf("-") - 1)),
 					link: domain + comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].href,
 					chapter_status: comic.getElementsByClassName("box-description")[0].getElementsByTagName("p")[0].textContent.substr(comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].textContent.length + 4),
 					tags: tags,
@@ -462,6 +463,7 @@ app.get("/character/:name", function(req, res) {
 				}
 				data.push({
 					name: comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].textContent,
+					id: parseInt(comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].href.substr(1, comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].href.indexOf("-") - 1)),
 					link: domain + comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].href,
 					chapter_status: comic.getElementsByClassName("box-description")[0].getElementsByTagName("p")[0].textContent.substr(comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].textContent.length + 4),
 					tags: tags,
@@ -536,6 +538,7 @@ app.get("/doujin/:name", function(req, res) {
 				}
 				data.push({
 					name: comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].textContent,
+					id: parseInt(comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].href.substr(1, comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].href.indexOf("-") - 1)),
 					link: domain + comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].href,
 					chapter_status: comic.getElementsByClassName("box-description")[0].getElementsByTagName("p")[0].textContent.substr(comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].textContent.length + 4),
 					tags: tags,
@@ -618,6 +621,7 @@ app.get("/tag/:tag", function(req, res) {
 				data.comics.push({
 					name: comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].textContent,
 					link: domain + comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].href,
+					id: parseInt(comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].href.substr(1, comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].href.indexOf("-") - 1)),
 					chapter_status: comic.getElementsByClassName("box-description")[0].getElementsByTagName("p")[0].textContent.substr(comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].textContent.length + 4),
 					tags: tags,
 					other_names: other_names,
@@ -878,6 +882,7 @@ app.get("/search/:query", function(req, res) {
 				}
 				data.push({
 					name: comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].textContent,
+					id: parseInt(comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].href.substr(1, comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].href.indexOf("-") - 1)),
 					link: domain + comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].href,
 					chapter_status: comic.getElementsByClassName("box-description")[0].getElementsByTagName("p")[0].textContent.substr(comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].textContent.length + 4),
 					tags: tags,
