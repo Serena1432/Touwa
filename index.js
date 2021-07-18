@@ -404,7 +404,7 @@ app.get("/author/:name", function(req, res) {
 		// Returning the normal status
 		return res.send({success: true, url: url, ping: ping + "ms", data: data});
 	});
-
+});
 
 /*
 -----------------------------------------------------------------
