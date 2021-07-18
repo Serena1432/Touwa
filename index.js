@@ -490,7 +490,7 @@ app.get("/tag/:tag", function(req, res) {
 	res.header("Access-Control-Allow-Origin", "*");
 	res.header("Content-Type", "application/json");
 	// Declaring the time and URL variable
-	var time = new Date(), url = domain + "/the-loai-" + encodeURIComponent(req.params.tag) + ".html";
+	var time = new Date(), url = domain + "/the-loai-" + encodeURIComponent(req.params.tag) + ".html?page=" + (req.query.page || 1);
 	// Getting content from the website
 	request(url, function(error, response, body) {
 		// Returning error if have
@@ -736,6 +736,80 @@ app.get("/user/:id", function(req, res) {
 						id: parseInt(comicLink.substr(0, comicLink.indexOf("-")))
 					},
 					content: comment.getElementsByTagName("p")[0].textContent
+				});
+			}
+		}
+		catch (err) {
+			console.error(err);
+			return res.status(500).send({success: false, error_code: 500, message: err.toString(), url: url, documentation_url: "https://www.github.com/LilShieru/Touwa/wiki"});
+		}
+		// Returning the normal status
+		return res.send({success: true, url: url, ping: ping + "ms", data: data});
+	});
+});
+
+/*
+-----------------------------------------------------------------
+	Searching comics with a query
+-----------------------------------------------------------------
+*/
+app.get("/search/:query", function(req, res) {
+	// Add some headers
+	res.header("Access-Control-Allow-Origin", "*");
+	res.header("Content-Type", "application/json");
+	// Declaring the time and URL variable
+	var time = new Date(), url = domain + "/tim-kiem-truyen.html?key=" + encodeURIComponent(req.params.query) + "&page=" + (req.query.page || 1);
+	// Getting content from the website
+	request(url, function(error, response, body) {
+		// Returning error if have
+		if (error) return res.status(500).send({success: false, error_code: 500, message: error.toString(), url: url, documentation_url: "https://www.github.com/LilShieru/Touwa/wiki"});
+		if (response.statusCode != 200) return res.status(503).send({success: false, error_code: 503, message: "The target website returned a " + response.statusCode + " error.", url: url, documentation_url: "https://www.github.com/LilShieru/Touwa/wiki"});
+		// Declaring the ping variable
+		var ping = new Date().getTime() - time.getTime();
+		// Parsing content
+		const dom = new JSDOM(body), document = dom.window.document;
+		try {
+			if (document.title.includes("404")) return res.status(404).send({success: false, error_code: 404, message: "The target website returned a 404 error.", url: url, documentation_url: "https://www.github.com/LilShieru/Touwa/wiki"});
+			if (document.getElementsByClassName("block-item")[0].getElementsByTagName("li")[0].textContent == "Not found") return res.status(404).send({success: false, error_code: 404, message: "The target website returned a 404 error.", url: url, documentation_url: "https://www.github.com/LilShieru/Touwa/wiki"});
+			var data = [], comics = document.getElementsByClassName("item");
+			for (var i = 0; i < comics.length; i++) {
+				var comic = document.getElementsByClassName("item")[i];
+				var info = comic.getElementsByTagName("p");
+				var other_names = [], tags = [], views;
+				for (var j = 1; j < info.length; j++) {
+					switch (info[j].getElementsByClassName("info")[0].textContent) {
+						case "Tên Khác: ": {
+							for (var k = 0; k < info[j].getElementsByTagName("span").length; k++) other_names.push({
+								name: info[j].getElementsByTagName("span")[k].getElementsByTagName("a")[0].textContent,
+								link: domain + info[j].getElementsByTagName("span")[k].getElementsByTagName("a")[0].href
+							});
+							break;
+						}
+						case "Thể Loại: ": {
+							tags = [];
+							for (var k = 0; k < info[j].getElementsByTagName("span").length; k++) {
+								var tagLink = info[j].getElementsByTagName("span")[k].getElementsByTagName("a")[0].href, name = tagLink.substr(tagLink.indexOf("the-loai-") + 9);
+								tags.push({
+									name: info[j].getElementsByTagName("span")[k].textContent,
+									link: domain + info[j].getElementsByTagName("span")[k].getElementsByTagName("a")[0].href,
+									tag: name.substr(0, name.indexOf(".html"))
+								});
+							}
+							break;
+						}
+						case "Lượt xem: ": {
+							views = parseInt(info[j].textContent.substr(11).replace(".", "").replace(".", ""))
+							break;
+						}
+					}
+				}
+				data.push({
+					name: comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].textContent,
+					link: domain + comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].href,
+					chapter_status: comic.getElementsByClassName("box-description")[0].getElementsByTagName("p")[0].textContent.substr(comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].textContent.length + 4),
+					tags: tags,
+					other_names: other_names,
+					views: views
 				});
 			}
 		}
