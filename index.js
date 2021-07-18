@@ -404,19 +404,19 @@ app.get("/author/:name", function(req, res) {
 		// Returning the normal status
 		return res.send({success: true, url: url, ping: ping + "ms", data: data});
 	});
-});
+
 
 /*
 -----------------------------------------------------------------
-	Getting information of a character
+	Getting information of a doujinshi
 -----------------------------------------------------------------
 */
-app.get("/character/:name", function(req, res) {
+app.get("/doujin/:name", function(req, res) {
 	// Add some headers
 	res.header("Access-Control-Allow-Origin", "*");
 	res.header("Content-Type", "application/json");
 	// Declaring the time and URL variable
-	var time = new Date(), url = domain + "/tim-kiem-charater.html?key=" + encodeURIComponent(req.params.name) + "&page=" + (req.query.page || 1);
+	var time = new Date(), url = domain + "/tim-kiem-doujinshi.html?key=" + encodeURIComponent(req.params.name) + "&page=" + (req.query.page || 1);
 	// Getting content from the website
 	request(url, function(error, response, body) {
 		// Returning error if have
