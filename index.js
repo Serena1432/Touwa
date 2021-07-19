@@ -113,13 +113,13 @@ app.get("/comic/:id", function(req, res) {
 			if (document.title.includes("404")) return res.status(404).send({success: false, error_code: 404, message: "The target website returned a 404 error.", url: url, documentation_url: "https://www.github.com/LilShieru/Touwa/wiki"});
 			var title = document.getElementsByClassName("page-info")[0].getElementsByTagName("h1")[0].textContent, data = {
 				name: title.substr(2, title.lastIndexOf(" - ") - 2),
-				image_url: document.getElementsByClassName("page-ava")[0].getElementsByTagName("img")[0].src
+				image_url: document.getElementsByClassName("page-ava")[0].getElementsByTagName("img")[0].src,
+				uploaders: []
 			}, info = document.getElementsByClassName("page-info")[0].getElementsByTagName("p"), description = [];
-			data.uploader = {
-				name: document.getElementsByClassName("name-uploader")[0].getElementsByTagName("b")[0].textContent,
-				link: domain + document.getElementsByClassName("name-uploader")[0].getElementsByTagName("a")[0].href,
-				badge: document.getElementsByClassName("name-uploader")[0].getElementsByTagName("strong")[0].textContent.substr(1)
-			};
+			data.uploaders.push({
+				id: parseInt(document.getElementsByClassName("name-uploader")[0].getElementsByTagName("a")[0].href.substr(document.getElementsByClassName("name-uploader")[0].getElementsByTagName("a")[0].href.indexOf("-")  + 1)),
+				name: document.getElementsByClassName("name-uploader")[0].getElementsByTagName("b")[0].textContent
+			});
 			for (var i = 0; i < info.length; i++) {
 				if (info[i].getElementsByClassName("info").length > 0) switch (info[i].getElementsByClassName("info")[0].textContent) {
 					case "Tên Khác: ": {
@@ -201,10 +201,10 @@ app.get("/comic/:id", function(req, res) {
 						break;
 					}
 					case "Phó thớt: ": {
-						data.co_uploader = {
-							name: info[i].getElementsByTagName("a")[0].getElementsByTagName("b")[0].textContent,
-							link: domain + info[i].getElementsByTagName("a")[0].href
-						};
+						data.uploaders.push({
+							id: parseInt(info[i].getElementsByTagName("a")[0].href.substr(info[i].getElementsByTagName("a")[0].href.indexOf("-") + 1)),
+							name: info[i].getElementsByTagName("a")[0].getElementsByTagName("b")[0].textContent
+						});
 						break;
 					}
 					case "Ủng hộ nhóm tại:": {
@@ -579,14 +579,7 @@ app.get("/tag/:tag", function(req, res) {
 		try {
 			if (document.title.includes("404")) return res.status(404).send({success: false, error_code: 404, message: "The target website returned a 404 error.", url: url, documentation_url: "https://www.github.com/LilShieru/Touwa/wiki"});
 			if (document.getElementsByClassName("block-item")[0].getElementsByTagName("li")[0].textContent == "Not found") return res.status(404).send({success: false, error_code: 404, message: "The target website returned a 404 error.", url: url, documentation_url: "https://www.github.com/LilShieru/Touwa/wiki"});
-			var data = {
-				tag_info: {
-					name: document.getElementsByClassName("ul-list-info")[0].getElementsByTagName("h2")[0].textContent,
-					image_url: document.getElementsByClassName("ul-list-info")[0].getElementsByTagName("img")[0].src,
-					description: document.getElementsByClassName("ul-list-info")[0].getElementsByTagName("p")[0].textContent.substr(1),
-				},
-				comics: []
-			}, comics = document.getElementsByClassName("item");
+			var data = [], comics = document.getElementsByClassName("item");
 			for (var i = 0; i < comics.length; i++) {
 				var comic = document.getElementsByClassName("item")[i];
 				var info = comic.getElementsByTagName("p");
@@ -618,7 +611,7 @@ app.get("/tag/:tag", function(req, res) {
 						}
 					}
 				}
-				data.comics.push({
+				data.push({
 					name: comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].textContent,
 					link: domain + comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].href,
 					id: parseInt(comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].href.substr(1, comic.getElementsByClassName("box-description")[0].getElementsByTagName("a")[0].href.indexOf("-") - 1)),
