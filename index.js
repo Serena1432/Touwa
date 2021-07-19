@@ -902,6 +902,49 @@ app.get("/search/:query", function(req, res) {
 
 /*
 -----------------------------------------------------------------
+	Getting latest topics
+-----------------------------------------------------------------
+*/
+app.get("/forum/topic/latest", function(req, res) {
+	// Add some headers
+	res.header("Access-Control-Allow-Origin", "*");
+	res.header("Content-Type", "application/json");
+	// Declaring the time and URL variable
+	var time = new Date(), url = domain + "/forum";
+	// Getting content from the website
+	request(url, function(error, response, body) {
+		// Returning error if have
+		if (error) return res.status(500).send({success: false, error_code: 500, message: error.toString(), url: url, documentation_url: "https://www.github.com/LilShieru/Touwa/wiki"});
+		if (response.statusCode != 200) return res.status(503).send({success: false, error_code: 503, message: "The target website returned a " + response.statusCode + " error.", url: url, documentation_url: "https://www.github.com/LilShieru/Touwa/wiki"});
+		// Declaring the ping variable
+		var ping = new Date().getTime() - time.getTime();
+		// Parsing content
+		const dom = new JSDOM(body), document = dom.window.document;
+		try {
+			if (document.title.includes("404")) return res.status(404).send({success: false, error_code: 404, message: "The target website returned a 404 error.", url: url, documentation_url: "https://www.github.com/LilShieru/Touwa/wiki"});
+			var data = [];
+			var topics = document.getElementsByClassName("link_visit");
+			for (var i = 0; i < topics.length; i++) {
+				var topic = topics[i];
+				data.push({
+					type: topic.getElementsByClassName("prefix")[0].textContent,
+					name: topic.getElementsByTagName("a")[0].textContent.substr(topic.getElementsByClassName("prefix")[0].textContent.length + 2),
+					link: domain + topic.getElementsByTagName("a")[0].href,
+					last_answered_user: topic.getElementsByClassName("lastRight")[0].getElementsByTagName("strong")[0].textContent
+				});
+			}
+		}
+		catch (err) {
+			console.error(err);
+			return res.status(500).send({success: false, error_code: 500, message: err.toString(), url: url, documentation_url: "https://www.github.com/LilShieru/Touwa/wiki"});
+		}
+		// Returning the normal status
+		return res.send({success: true, url: url, ping: ping + "ms", data: data});
+	});
+});
+
+/*
+-----------------------------------------------------------------
 	Error handling
 -----------------------------------------------------------------
 */
