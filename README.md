@@ -1,3 +1,5 @@
+## This API is deprecated for a long time because of the website's restriction. Sorry about that, but there's almost no way to fix it.<br>This API is now archived.
+
 ![Erio Touwa](https://static.wikia.nocookie.net/denpaonna/images/8/84/Erio_Touwa_2.jpg/revision/latest?cb=20180226170827)
 
 # "Touwa" API
